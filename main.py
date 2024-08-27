@@ -1,4 +1,5 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
 import google.generativeai as genai
 
 # Configure the Gemini AI
@@ -8,6 +9,14 @@ genai.configure(api_key='AIzaSyCgZxMbdMmYVyo2zTK-J-6GRLYcGdGHYWQ')
 model = genai.GenerativeModel('gemini-pro')
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], 
+    allow_credentials=True,
+    allow_methods=["*"],  
+    allow_headers=["*"], 
+)
 
 class ConnectionManager:
     def __init__(self):
@@ -51,4 +60,3 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
         await manager.broadcast("Client left the chat")
-
